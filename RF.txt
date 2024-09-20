@@ -1,0 +1,25 @@
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, roc_curve, auc, classification_report
+import matplotlib.pyplot as plt
+import seaborn as sns
+data = pd.read_csv("C:/Users/user/Desktop/Mon_PFE_GAGE/3_Projet/reclass_factors.csv", sep=';', encoding='latin-1')
+X = data.drop(columns=['Debit','Coord_X_Po','Coord_Y_Po'])
+y = data['Debit']
+y_binary = (y >= 5).astype(int)
+X_train, X_test, y_train, y_test = train_test_split(X, y_binary, test_size=0.2, random_state=42)
+# Appliquer les poids à chaque facteur dans les données d'entraînement et de test
+weights = {'norm_slope': 0.496967, 'norm_aspec': 15.133965, 'norm_curva': 7.242264, 'norm_twi': 11.413055, 'norm_distf': 10.108151, 'norm_flowa': 13.232108, 'norm_litho': 24.308196, 'norm_mnt': 14.266455, 'norm_distr': 3.798839}
+X_train_weighted = X_train.copy()
+X_test_weighted = X_test.copy()
+for feature, weight in weights.items():
+X_train_weighted[feature] *= weight
+X_test_weighted[feature] *= weight
+rf_model = RandomForestClassifier()
+rf_model.fit(X_train_weighted, y_train)
+y_pred_rf = rf_model.predict(X_test_weighted)
+# Calculer l'exactitude du RF
+accuracy_rf = accuracy_score(y_test, y_pred_rf) print("Accuracy of RF:", accuracy_rf)
+Accuracy of RF: 0.82

@@ -1,0 +1,28 @@
+from sklearn.ensemble import RandomForestRegressor
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import r2_score
+import seaborn as sns
+import matplotlib.pyplot as plt
+data = pd.read_csv("C:/Users/user/Desktop/Mon_PFE_GAGE/3_Projet/reclass_factors.csv", sep=';', encoding='latin-1')
+X = data.drop(columns=['Debit','Coord_X_Po','Coord_Y_Po'])
+y = data['Debit']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+rf_model = RandomForestRegressor()
+rf_model.fit(X, y)
+feature_importances = pd.DataFrame({'Facteur': X.columns, 'Poids': rf_model.feature_importances_*100})
+print(feature_importances)
+Facteur Poids
+1 norm_slope 0.496967
+2 norm_aspec 15.133965
+3 norm_curva 7.242264
+4 norm_twi 11.413055
+5 norm_flowa 13.232108
+6 norm_mnt 14.266455
+7 norm_distr 3.798839
+8 norm_distf 10.108151
+9 norm_litho 24.308196
+score = rf_model.score(X_test, y_test)
+print("Score du modèle:", score)
+Score du modèle : 0.86
